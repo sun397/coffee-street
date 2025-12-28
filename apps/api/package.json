@@ -1,0 +1,7 @@
+{
+  "name": "api",
+  "scripts": {
+    "dev": "~/go/bin/air",
+    "build": "go build -o main main.go"
+  }
+}

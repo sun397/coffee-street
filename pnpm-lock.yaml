@@ -18,7 +18,9 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  apps/docs:
+  apps/api: {}
+
+  apps/user:
     dependencies:
       '@repo/ui':
         specifier: workspace:*
@@ -55,7 +57,7 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  apps/web:
+  apps/admin:
     dependencies:
       '@repo/ui':
         specifier: workspace:*
