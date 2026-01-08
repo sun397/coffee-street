@@ -1,13 +1,15 @@
-// apps/admin/app/layout.tsx
-import { AuthProvider } from "@/context/auth-context";
+import { AuthInitializer } from "@/components/auth-initializer";
+import QueryProvider from "@/components/providers/query-provider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
       <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <QueryProvider>
+          <AuthInitializer>
+            {children}
+          </AuthInitializer>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -1,47 +1,85 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useAuthStore } from "@repo/store";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
 
 export default function LoginPage() {
-  const { user, loading, loginWithGoogle } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { user, loading } = useAuthStore();
   const router = useRouter();
 
+  // 既にログインしている場合はトップへ飛ばす
   useEffect(() => {
     if (!loading && user) {
       router.push("/");
     }
   }, [user, loading, router]);
 
-  const handleLogin = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
     try {
-      await loginWithGoogle();
-    } catch (error) {
-      console.error("ログイン失敗:", error);
-      alert("ログインに失敗しました。");
+      await signInWithEmailAndPassword(auth, email, password);
+      // 成功時、AuthInitializerが検知してストアが更新されるため、
+      // ここで手動リダイレクトしなくてもuseEffect側で処理されます
+    } catch (err: any) {
+      setError("ログインに失敗しました。メールアドレスとパスワードを確認してください。");
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) return <div className="flex h-screen items-center justify-center">読み込み中...</div>;
+  // 認証状態のロード中は真っ白を避けるため簡易ローディングを表示
+  if (loading) return <div className="p-8 text-center">読み込み中...</div>;
+  if (user) return null; // useEffectのリダイレクトを待つ
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96 text-center">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Coffee Street Admin</h1>
-        <p className="text-sm text-gray-600 mb-8">店舗管理画面へログイン</p>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 bg-white p-8 rounded shadow">
+        <h1 className="text-2xl font-bold text-center text-black">Admin Login</h1>
         
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        
+        <div>
+          <label className="block text-sm text-gray-600">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 border rounded text-black"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm text-gray-600">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border rounded text-black"
+            required
+          />
+        </div>
+
         <button
-          onClick={handleLogin}
-          className="w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 font-medium"
+          type="submit"
+          disabled={isSubmitting}
+          className={`w-full p-2 text-white rounded ${
+            isSubmitting ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
         >
-          Googleでログイン
+          {isSubmitting ? "ログイン中..." : "ログイン"}
         </button>
-        
-        <p className="mt-6 text-xs text-gray-400">
-          ※関係者以外の方はアクセスできません
-        </p>
-      </div>
+      </form>
     </div>
   );
 }
