@@ -1,13 +1,20 @@
-// apps/admin/app/layout.tsx
 import { AuthProvider } from "@/context/auth-context";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const inter = Inter({ subsets: ["latin"] });
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="ja">
-      <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+    <html lang="ja" suppressHydrationWarning>
+      <body
+        className={`${inter.className} min-h-screen antialiased bg-[#FAF9F6] text-[#3E2723]`}
+      >
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
