@@ -1,6 +1,5 @@
-// apps/admin/lib/firebase.ts
+// apps/user/lib/firebase.ts
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -15,5 +14,4 @@ const firebaseConfig = {
 
 // サーバーサイドでの二重初期化を防ぐ
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]!;
-export const auth = getAuth(app);
 export const db = getFirestore(app);
