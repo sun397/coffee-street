@@ -19,7 +19,7 @@ reviews:
     - "!**/*.min.js"
     - "!**/*.min.css"
 
-  profile: "default"
+  profile: "assertive"
 
 chat:
   auto_reply: true
