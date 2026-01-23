@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --filter admin add:*)",
+      "Bash(pnpm:*)"
+    ]
+  }
+}
