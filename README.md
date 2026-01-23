@@ -28,3 +28,23 @@ pnpm install
 # Goの依存関係インストール
 cd apps/api
 go mod download
+
+```
+
+## UIコンポーネントの追加手順
+
+共有パッケージである `packages/ui` に新しい shadcn/ui コンポーネントを追加する場合は、以下の手順で行います。
+
+```powershell
+# UIパッケージのディレクトリへ移動
+cd packages/ui
+
+# shadcn/ui でコンポーネントを追加 (例: button, dialog等)
+pnpm dlx shadcn@latest add "コンポーネント名"
+
+```
+
+> [!TIP]
+> **エクスポートの確認** > 追加したコンポーネントを `apps/admin` や `apps/user` から利用できるようにするため `packages/ui/src/index.ts` に追加してください。
+
+---
