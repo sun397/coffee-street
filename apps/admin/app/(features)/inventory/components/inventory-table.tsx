@@ -78,7 +78,7 @@ export const InventoryTable = ({ data, onArchive, onEdit }: any) => {
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="text-right font-mono">
+              <TableCell className="text-right">
                 ¥{product.price.toLocaleString()}
               </TableCell>
               <TableCell className="text-right">
