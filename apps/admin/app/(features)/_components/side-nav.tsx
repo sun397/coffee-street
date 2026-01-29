@@ -58,11 +58,6 @@ export const SideNav = () => {
       href: "/inventory",
     },
     {
-      icon: <Store size={18} />,
-      label: "店舗・こだわり設定",
-      href: "/settings",
-    },
-    {
       icon: <Users size={18} />,
       label: "ファンコミュニティ",
       href: "/community",
