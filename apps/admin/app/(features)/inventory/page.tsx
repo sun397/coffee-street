@@ -12,8 +12,8 @@ export default function InventoryPage() {
   const [products, setProducts] = useState(MOCK_DATA);
 
   const handleArchive = (id: string, newStatus: "active" | "archived") => {
-    setProducts(
-      products.map((p) => (p.id === id ? { ...p, status: newStatus } : p)),
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)),
     );
   };
 
