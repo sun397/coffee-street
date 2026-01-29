@@ -14,8 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui";
+import { ReservationItemDto } from "@/app/(features)/dashboard/types/index";
 
-const ReservationItem = ({ name, item, time, status }: any) => (
+const ReservationItem = ({ name, item, time, status }: ReservationItemDto) => (
   <TableRow className="border-stone-50">
     <TableCell className="font-medium text-stone-900">{name}</TableCell>
     <TableCell className="text-stone-600">{item}</TableCell>
