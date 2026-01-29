@@ -48,7 +48,7 @@ export const InventoryTable = ({ data, onArchive, onEdit }: any) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((product: any) => (
+          {data?.map((product: any) => (
             <TableRow
               key={product.id}
               className={product.status === "archived" ? "opacity-50" : ""}

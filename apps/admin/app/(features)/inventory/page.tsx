@@ -1,24 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InventoryTable } from "@/app/(features)/inventory/components/inventory-table";
 import { ProductFormDialog } from "@/app/(features)/inventory/components/product-form-dialog";
 import { Button, Input } from "@repo/ui";
 import { Plus, Search, Filter } from "lucide-react";
-import { MOCK_DATA } from "./_constants";
+import { Product } from "./types";
 
 export default function InventoryPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [products, setProducts] = useState(MOCK_DATA);
+  const [products, setProducts] = useState<Product[]>();
 
   const handleArchive = (id: string, newStatus: "active" | "archived") => {
     setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)),
+      prev?.map((p) => (p.id === id ? { ...p, status: newStatus } : p)),
     );
   };
 
+  const handleRegist = (value?: Product) => {
+    console.log(value);
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await fetch("http://localhost:8081/api/inventory/get");
+      const data = await res.json();
+
+      setProducts(data);
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
+      <ProductFormDialog
+        open={isDialogOpen}
+        setOpen={setIsDialogOpen}
+        handleRegist={handleRegist}
+      />
+
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-3xl font-serif font-bold text-stone-900">
@@ -52,12 +73,10 @@ export default function InventoryPage() {
       <InventoryTable
         data={products}
         onArchive={handleArchive}
-        onEdit={(p: any) => {
+        onEdit={() => {
           /* 編集ロジック */
         }}
       />
-
-      <ProductFormDialog open={isDialogOpen} setOpen={setIsDialogOpen} />
     </div>
   );
 }
