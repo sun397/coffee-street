@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   Package,
   Settings,
-  Store,
   Users,
 } from "lucide-react";
 
