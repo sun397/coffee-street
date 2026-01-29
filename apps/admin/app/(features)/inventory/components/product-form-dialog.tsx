@@ -57,7 +57,10 @@ export const ProductFormDialog = ({ open, setOpen, initialData }: any) => {
           <Button variant="outline" onClick={() => setOpen(false)}>
             キャンセル
           </Button>
-          <Button className="bg-orange-800 hover:bg-orange-900">
+          <Button
+            className="bg-orange-800 hover:bg-orange-900"
+            onClick={() => setOpen(false)}
+          >
             保存する
           </Button>
         </div>

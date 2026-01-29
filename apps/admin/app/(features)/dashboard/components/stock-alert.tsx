@@ -7,8 +7,9 @@ import {
   Progress,
   Button,
 } from "@repo/ui";
+import { InventoryItemDto } from "../types";
 
-const InventoryItem = ({ label, percent, color }: any) => (
+const InventoryItem = ({ label, percent, color }: InventoryItemDto) => (
   <div className="space-y-1.5">
     <div className="flex justify-between text-xs font-medium">
       <span className="text-stone-700">{label}</span>
