@@ -1,0 +1,25 @@
+# CodeRabbit Configuration
+# https://docs.coderabbit.ai/configuration/
+
+language: "ja-JP"
+
+reviews:
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+
+  path_filters:
+    - "!pnpm-lock.yaml"
+    - "!**/*.lock"
+    - "!**/dist/**"
+    - "!**/.next/**"
+    - "!**/node_modules/**"
+    - "!**/*.min.js"
+    - "!**/*.min.css"
+
+  profile: "assertive"
+
+chat:
+  auto_reply: true
