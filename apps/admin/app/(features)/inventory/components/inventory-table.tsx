@@ -57,7 +57,14 @@ export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps)
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((product: any) => (
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="h-24 text-center text-stone-500">
+                商品データがありません
+              </TableCell>
+            </TableRow>
+          ) : (
+          data.map((product: Product) => (
             <TableRow
               key={product.id}
               className={product.status === "archived" ? "opacity-50" : ""}
@@ -148,7 +155,8 @@ export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps)
                 </DropdownMenu>
               </TableCell>
             </TableRow>
-          ))}
+          ))
+          )}
         </TableBody>
       </Table>
     </div>
