@@ -8,26 +8,23 @@ export const inventoryKeys = {
   byUser: (userId: string) => [...inventoryKeys.all, userId] as const,
 };
 
-// select
-export function useinventorys(userId: string | undefined) {
+export function useInventorys(userId: string) {
   return useQuery({
     // userIdが変わるたびにキャッシュを分ける
-    queryKey: inventoryKeys.byUser(userId ?? ""), 
+    queryKey: inventoryKeys.byUser(userId), 
     // 実際に叩くAPI
-    queryFn: () => inventoryApi.fetchByUserId(userId!),
+    queryFn: () => inventoryApi.fetchByUserId(userId),
     // userIdが存在するときだけ実行する
     enabled: !!userId, 
   });
 }
 
-// insert
-export function useAddInventory(userId: string | undefined) {
+export function useAddInventory(userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newProduct: Product) => 
-      inventoryApi.create({ ...newProduct }),
-    
+    mutationFn: (value: Product) => 
+      inventoryApi.create({ ...value }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: inventoryKeys.byUser(userId ?? '')

@@ -20,12 +20,10 @@ export const inventoryApi = {
       ...doc.data(),
     })) as Product[];
   },
-  create: async (product: Product): Promise<Product[]> => {
+  create: async (product: Product): Promise<void> => {
     if(USE_DUMMY){
       await new Promise((resolve) => setTimeout(resolve, 800));
-      return [...DUMMY_PRODUCTS, product]
     }
-
-    return []
+    // 登録処理
   }
 };

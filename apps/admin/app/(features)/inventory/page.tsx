@@ -5,13 +5,15 @@ import { InventoryTable } from "@/app/(features)/inventory/components/inventory-
 import { ProductFormDialog } from "@/app/(features)/inventory/components/product-form-dialog";
 import { Button, Input } from "@repo/ui";
 import { Plus, Search, Filter } from "lucide-react";
-import { useinventorys } from "@/lib/queries/inventory";
+import { useInventorys } from "@/lib/queries/inventory";
 import { Product } from "./types";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export default function InventoryPage() {
+  const userId = useUserStore((state) => state.userId);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const { data: products, isLoading } = useinventorys('1');
+  const { data: products, isLoading } = useInventorys(userId);
 
   const handleArchive = (id: string, newStatus: "active" | "archived") => {};
 

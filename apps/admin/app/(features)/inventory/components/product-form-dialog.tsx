@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -10,69 +11,159 @@ import {
   Label,
   Slider,
 } from "@repo/ui";
-import { Product } from "../types";
+import { Product, RoastLevel } from "../types";
 import { useAddInventory } from "@/lib/queries/inventory";
 import { ROAST_LABELS } from "../_constants";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export type ProductFormDialogProps = {
   open: boolean;
   setOpen: (value: boolean) => void;
   initialData?: Product;
-}
+};
+
+// 新規登録時のデフォルト値
+const getInitialState = (data?: Product): Partial<Product> => {
+  if (data) return data;
+  return {
+    name: "",
+    origin: "",
+    roastLevel: 3,
+    flavorTags: [],
+    price: 0,
+    stockWeight: 0,
+    status: "active",
+  };
+};
 
 export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDialogProps) => {
-  const addMutation = useAddInventory('1');
+  const [formData, setFormData] = useState<Partial<Product>>(getInitialState(initialData));
+
+  const userId = useUserStore((state) => state.userId);
+  const addMutation = useAddInventory(userId);
+
+  // ダイアログの状態が変わるたびにリセット
+  useEffect(() => {
+    if (open) {
+      setFormData(getInitialState(initialData));
+    }
+  }, [open, initialData]);
+
+  const handleSave = () => {
+    // 送信用データの整形
+    const submitData = {
+      ...formData,
+      id: initialData?.id || Math.random().toString(36).substring(7),
+      updatedAt: new Date().toISOString(),
+    } as Product;
+
+    addMutation.mutate(submitData, {
+      onSuccess: () => {
+        setOpen(false);
+      },
+      onError: (error) => {
+        console.error("保存に失敗しました:", error);
+        alert("保存中にエラーが発生しました。");
+      }
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
             {initialData ? "商品情報の編集" : "新規商品の登録"}
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+
+          {/* 商品名 */}
           <div className="grid gap-2">
             <Label htmlFor="name">豆の名前</Label>
-            <Input id="name" placeholder="エチオピア イルガチェフェ" />
+            <Input 
+              id="name" 
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="エチオピア イルガチェフェ" 
+            />
           </div>
+
           <div className="grid grid-cols-2 gap-4">
+            {/* 産地 */}
             <div className="grid gap-2">
               <Label htmlFor="origin">産地</Label>
-              <Input id="origin" placeholder="エチオピア" />
+              <Input 
+                id="origin" 
+                value={formData.origin}
+                onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                placeholder="エチオピア" 
+              />
             </div>
+            {/* 価格 */}
             <div className="grid gap-2">
-              <Label htmlFor="price">販売価格 (100g)</Label>
-              <Input id="price" type="number" placeholder="850" />
+              <Label htmlFor="price">価格 (100g)</Label>
+              <Input 
+                id="price" 
+                type="number" 
+                value={formData.price || ""}
+                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+              />
             </div>
           </div>
+
+          {/* 焙煎度 */}
           <div className="grid gap-4 pt-2">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <Label>焙煎度</Label>
-              <span className="text-sm font-bold text-orange-600">
-                Level 3 ({ROAST_LABELS[2]})
+              <span className="text-sm font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                Level {formData.roastLevel} ({ROAST_LABELS[formData.roastLevel as RoastLevel]})
               </span>
             </div>
-            <Slider defaultValue={[3]} max={5} min={1} step={1} />
+            <Slider 
+              value={[formData.roastLevel || 3]} 
+              max={5} min={1} step={1} 
+              onValueChange={(vals) => setFormData({ ...formData, roastLevel: vals[0] as Product['roastLevel'] })}
+            />
           </div>
+
+          {/* フレーバータグ */}
           <div className="grid gap-2">
-            <Label htmlFor="tags">フレーバータグ (カンマ区切り)</Label>
-            <Input id="tags" placeholder="シトラス, フローラル, ベリー" />
+            <Label htmlFor="flavorTags">フレーバータグ (カンマ区切り)</Label>
+            <Input 
+              id="flavorTags" 
+              value={formData.flavorTags?.join(", ")}
+              onChange={(e) => setFormData({ 
+                ...formData, 
+                flavorTags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) 
+              })}
+              placeholder="シトラス, フローラル" 
+            />
           </div>
+
+          {/* 在庫量 */}
           <div className="grid gap-2">
-            <Label htmlFor="stock">初期在庫量 (kg)</Label>
-            <Input id="stock" type="number" step="0.1" />
+            <Label htmlFor="stockWeight">在庫量 (kg)</Label>
+            <Input 
+              id="stockWeight" 
+              type="number" 
+              step="0.1" 
+              value={formData.stockWeight || ""}
+              onChange={(e) => setFormData({ ...formData, stockWeight: Number(e.target.value) })}
+            />
           </div>
         </div>
-        <div className="flex justify-end gap-2">
+
+        <div className="flex justify-end gap-2 mt-2">
           <Button variant="outline" onClick={() => setOpen(false)}>
             キャンセル
           </Button>
           <Button
-            className="bg-orange-800 hover:bg-orange-900"
-            onClick={() => setOpen(false)}
+            className="bg-orange-800 hover:bg-orange-900 min-w-[100px]"
+            onClick={handleSave}
+            disabled={addMutation.isPending}
           >
-            保存する
+            {addMutation.isPending ? "保存中..." : "保存する"}
           </Button>
         </div>
       </DialogContent>
