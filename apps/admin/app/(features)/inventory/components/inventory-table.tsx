@@ -19,6 +19,7 @@ import {
   cn,
 } from "@repo/ui";
 import { MoreHorizontal, Edit, Archive, RotateCcw } from "lucide-react";
+import { Product } from "../types";
 
 const RoastIndicator = ({ level }: { level: number }) => (
   <div className="flex gap-1">
@@ -34,7 +35,13 @@ const RoastIndicator = ({ level }: { level: number }) => (
   </div>
 );
 
-export const InventoryTable = ({ data, onArchive, onEdit }: any) => {
+export type InventoryTableProps = {
+  data: Product[];
+  onArchive: (id: string, status: "active" | "archived") => void;
+  onEdit: (product: Product) => void;
+}
+
+export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps) => {
   return (
     <div className="rounded-md border border-stone-200 bg-white">
       <Table>
