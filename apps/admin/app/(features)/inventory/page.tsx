@@ -5,17 +5,19 @@ import { InventoryTable } from "@/app/(features)/inventory/components/inventory-
 import { ProductFormDialog } from "@/app/(features)/inventory/components/product-form-dialog";
 import { Button, Input } from "@repo/ui";
 import { Plus, Search, Filter } from "lucide-react";
-import { MOCK_DATA } from "./_constants";
+import { useinventorys } from "@/lib/queries/inventory";
+import { Product } from "./types";
 
 export default function InventoryPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [products, setProducts] = useState(MOCK_DATA);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const handleArchive = (id: string, newStatus: "active" | "archived") => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)),
-    );
-  };
+  const { data: products, isLoading } = useinventorys('1');
+
+  const handleArchive = (id: string, newStatus: "active" | "archived") => {};
+
+  const handleEdit = (product: Product) => {};
+
+  if (isLoading) return <p>読み込み中...</p>;
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
@@ -50,11 +52,9 @@ export default function InventoryPage() {
       </div>
 
       <InventoryTable
-        data={products}
+        data={products ?? []}
+        onEdit={handleEdit}
         onArchive={handleArchive}
-        onEdit={(p: any) => {
-          /* 編集ロジック */
-        }}
       />
 
       <ProductFormDialog open={isDialogOpen} setOpen={setIsDialogOpen} />

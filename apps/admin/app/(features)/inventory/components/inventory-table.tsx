@@ -19,10 +19,10 @@ import {
   cn,
 } from "@repo/ui";
 import { MoreHorizontal, Edit, Archive, RotateCcw } from "lucide-react";
-import { Product } from "../types";
+import { Product, RoastLevel } from "../types";
 import { LOW_STOCK_THRESHOLD } from "../_constants";
 
-const RoastIndicator = ({ level }: { level: number }) => (
+const RoastIndicator = ({ level }: { level: RoastLevel }) => (
   <div className="flex gap-1">
     {[...Array(5)].map((_, i) => (
       <div

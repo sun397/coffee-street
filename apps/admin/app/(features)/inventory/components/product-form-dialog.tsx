@@ -11,14 +11,17 @@ import {
   Slider,
 } from "@repo/ui";
 import { Product } from "../types";
+import { useAddInventory } from "@/lib/queries/inventory";
 
 export type ProductFormDialogProps = {
   open: boolean;
   setOpen: (value: boolean) => void;
-  initialData: Product;
+  initialData?: Product;
 }
 
 export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDialogProps) => {
+  const addMutation = useAddInventory('1');
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[425px]">
