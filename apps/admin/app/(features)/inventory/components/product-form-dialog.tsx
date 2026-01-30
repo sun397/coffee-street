@@ -106,7 +106,7 @@ export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDia
               <Input 
                 id="price" 
                 type="number" 
-                value={formData.price || ""}
+                value={formData.price ?? ""}
                 onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
               />
             </div>
@@ -148,7 +148,7 @@ export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDia
               id="stockWeight" 
               type="number" 
               step="0.1" 
-              value={formData.stockWeight || ""}
+              value={formData.stockWeight ?? ""}
               onChange={(e) => setFormData({ ...formData, stockWeight: Number(e.target.value) })}
             />
           </div>
