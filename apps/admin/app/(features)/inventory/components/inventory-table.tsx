@@ -16,6 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  cn,
 } from "@repo/ui";
 import { MoreHorizontal, Edit, Archive, RotateCcw } from "lucide-react";
 
@@ -24,9 +25,10 @@ const RoastIndicator = ({ level }: { level: number }) => (
     {[...Array(5)].map((_, i) => (
       <div
         key={i}
-        className={`w-2 h-2 rounded-full ${
+        className={cn(
+          "w-2 h-2 rounded-full",
           i < level ? "bg-stone-800" : "bg-stone-200"
-        }`}
+        )}
       />
     ))}
   </div>
