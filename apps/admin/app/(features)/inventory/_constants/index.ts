@@ -1,3 +1,5 @@
+export const LOW_STOCK_THRESHOLD = 5;
+
 export const MOCK_DATA = [
   {
     id: "1",

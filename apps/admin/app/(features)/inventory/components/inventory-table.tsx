@@ -20,6 +20,7 @@ import {
 } from "@repo/ui";
 import { MoreHorizontal, Edit, Archive, RotateCcw } from "lucide-react";
 import { Product } from "../types";
+import { LOW_STOCK_THRESHOLD } from "../_constants";
 
 const RoastIndicator = ({ level }: { level: number }) => (
   <div className="flex gap-1">
@@ -100,7 +101,7 @@ export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps)
               <TableCell className="text-right">
                 <span
                   className={
-                    product.stockWeight < 5 ? "text-red-600 font-bold" : ""
+                    product.stockWeight < LOW_STOCK_THRESHOLD ? "text-red-600 font-bold" : ""
                   }
                 >
                   {product.stockWeight} kg
