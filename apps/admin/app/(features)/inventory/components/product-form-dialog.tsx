@@ -10,8 +10,15 @@ import {
   Label,
   Slider,
 } from "@repo/ui";
+import { Product } from "../types";
 
-export const ProductFormDialog = ({ open, setOpen, initialData }: any) => {
+export type ProductFormDialogProps = {
+  open: boolean;
+  setOpen: (value: boolean) => void;
+  initialData: Product;
+}
+
+export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[425px]">
