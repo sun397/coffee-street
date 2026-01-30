@@ -12,6 +12,7 @@ import {
 } from "@repo/ui";
 import { Product } from "../types";
 import { useAddInventory } from "@/lib/queries/inventory";
+import { ROAST_LABELS } from "../_constants";
 
 export type ProductFormDialogProps = {
   open: boolean;
@@ -49,7 +50,7 @@ export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDia
             <div className="flex justify-between">
               <Label>焙煎度</Label>
               <span className="text-sm font-bold text-orange-600">
-                Level 3 (中煎り)
+                Level 3 ({ROAST_LABELS[2]})
               </span>
             </div>
             <Slider defaultValue={[3]} max={5} min={1} step={1} />
