@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Search } from "lucide-react";
-import { Input, Avatar, AvatarFallback, AvatarImage } from "@repo/ui";
+import { Input, Avatar, AvatarFallback, AvatarImage, cn } from "@repo/ui";
 import { useAuth } from "@/context/auth-context"; 
 
 export const TopHeader = () => {
@@ -12,7 +12,7 @@ export const TopHeader = () => {
   const initials = displayName.substring(0, 2).toUpperCase();
 
   return (
-    <header className="h-16 border-b border-stone-200 bg-white flex items-center justify-between px-8 sticky top-0 z-10">
+    <header className={cn("h-16 border-b border-stone-200 bg-white flex items-center justify-between px-8 sticky top-0 z-10")}>
       <div className="relative w-96">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4" />
         <Input

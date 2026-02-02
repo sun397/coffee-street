@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -68,13 +69,13 @@ export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDia
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className={cn("sm:max-w-[425px]")} onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
             {initialData ? "商品情報の編集" : "新規商品の登録"}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className={cn("grid gap-4 py-4")}>
 
           {/* 商品名 */}
           <div className="grid gap-2">
@@ -114,7 +115,7 @@ export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDia
           <div className="grid gap-4 pt-2">
             <div className="flex justify-between items-center">
               <Label>焙煎度</Label>
-              <span className="text-sm font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded">
+              <span className={cn("text-sm font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded")}>
                 Level {formData.roastLevel} ({ROAST_LABELS[formData.roastLevel as RoastLevel]})
               </span>
             </div>
@@ -157,7 +158,7 @@ export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDia
             キャンセル
           </Button>
           <Button
-            className="bg-orange-800 hover:bg-orange-900 min-w-[100px]"
+            className={cn("bg-orange-800 hover:bg-orange-900 min-w-[100px]")}
             onClick={handleSave}
             disabled={addMutation.isPending}
           >
