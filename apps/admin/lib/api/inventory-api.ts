@@ -75,9 +75,9 @@ export const inventoryApi = {
     try {
       const productRef = doc(db, "products", id);
       await updateDoc(productRef, {
-      archive,
-      updatedAt: serverTimestamp(),
-    });
+        archive,
+        updatedAt: serverTimestamp(),
+      });
     } catch (error) {
       console.error("Firestore 更新エラー:", error);
       throw error;
