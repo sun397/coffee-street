@@ -13,7 +13,7 @@ export function useInventories() {
   const userId = user?.uid;
 
   return useQuery({
-    queryKey: inventoryKeys.byUser(userId!),
+    queryKey: inventoryKeys.byUser(userId ?? ""),
     queryFn: () => inventoryApi.fetchByUserId(userId!),
     // userId が取得できるまでクエリを走らせない
     enabled: !!userId,

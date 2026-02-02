@@ -34,7 +34,10 @@ export default function InventoryPage() {
         </div>
         <Button
           className={cn("bg-orange-800 hover:bg-orange-900")}
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => {
+            setSelectedValue(undefined);
+            setIsDialogOpen(true);
+          }}
         >
           <Plus className={cn("w-4 h-4 mr-2")} /> 新規商品登録
         </Button>
@@ -62,7 +65,10 @@ export default function InventoryPage() {
       <ProductFormDialog
         open={isDialogOpen}
         value={selectedValue}
-        setOpen={setIsDialogOpen}
+        setOpen={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setSelectedValue(undefined);
+        }}
         handleChange={setSelectedValue}
       />
     </div>

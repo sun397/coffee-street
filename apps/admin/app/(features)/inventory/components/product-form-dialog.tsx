@@ -44,15 +44,15 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
   const updateMutation = useUpdateInventory();
 
   const handleSave = () => {
-    const value = { ...formData } as Product;
+    const submitData = { ...formData } as Product;
 
-    if (!value) {
-      addMutation.mutate(value, {
+    if (!value?.id) {
+      addMutation.mutate(submitData, {
         onSuccess: () => setOpen(false),
         onError: (err) => alert("エラー: " + err.message)
       });
     } else {
-      updateMutation.mutate({ ...value, id: value.id }, {
+      updateMutation.mutate({ ...submitData, id: value.id }, {
         onSuccess: () => {
           setOpen(false);
           handleChange(undefined);
