@@ -116,12 +116,17 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
           <div className="grid gap-4 pt-2">
             <div className="flex justify-between items-center">
               <Label>焙煎度</Label>
-              <span className={cn("text-sm font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded")}>
-                Level {formData.roastLevel} ({ROAST_LABELS[formData.roastLevel as RoastLevel]})
-              </span>
+              {(() => {
+                const roastLevel = (formData.roastLevel ?? 3) as RoastLevel;
+                return (
+                  <span className={cn("text-sm font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded")}>
+                    Level {roastLevel} ({ROAST_LABELS[roastLevel]})
+                  </span>
+                );
+              })()}
             </div>
-            <Slider 
-              value={[formData.roastLevel || 3]} 
+            <Slider
+              value={[(formData.roastLevel ?? 3) as RoastLevel]} 
               max={5} min={1} step={1} 
               onValueChange={(vals) => setFormData({ ...formData, roastLevel: vals[0] as Product['roastLevel'] })}
             />

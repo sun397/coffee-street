@@ -43,10 +43,17 @@ export type InventoryTableProps = {
 }
 
 export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
-  const archiveMutation = useArchiveInventory()
+  const archiveMutation = useArchiveInventory();
 
   const onArchive = (id: string, archive: boolean) => {
-    archiveMutation.mutate({ id, archive })
+    archiveMutation.mutate(
+      { id, archive },
+      {
+        onError: (error) => {
+          console.error("アーカイブ操作に失敗しました:", error);
+        },
+      }
+    );
   }
 
   return (
@@ -60,7 +67,7 @@ export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
             <TableHead className="text-right">販売価格</TableHead>
             <TableHead className="text-right">在庫量</TableHead>
             <TableHead className="text-center">ステータス</TableHead>
-            <TableHead className="w-25"></TableHead>
+            <TableHead className="w-24"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -74,7 +81,7 @@ export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
           data.map((product: Product) => (
             <TableRow
               key={product.id}
-              className={product.archive ? "opacity-50" : ""}
+              className={cn(product.archive && "opacity-50")}
             >
               <TableCell>
                 <div className="font-medium text-stone-900">{product.name}</div>
@@ -106,9 +113,9 @@ export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
               </TableCell>
               <TableCell className="text-right">
                 <span
-                  className={
-                    product.stockWeight < LOW_STOCK_THRESHOLD ? "text-red-600 font-bold" : ""
-                  }
+                  className={cn(
+                    product.stockWeight < LOW_STOCK_THRESHOLD && "text-red-600 font-bold"
+                  )}
                 >
                   {product.stockWeight} kg
                 </span>

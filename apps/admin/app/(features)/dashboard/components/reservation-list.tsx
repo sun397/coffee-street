@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  cn,
   Table,
   TableBody,
   TableCell,
@@ -24,11 +25,11 @@ const ReservationItem = ({ name, item, time, status }: ReservationItemDto) => (
     <TableCell className="text-right">
       <Badge
         variant={status === "ready" ? "default" : "secondary"}
-        className={
+        className={cn(
           status === "ready"
             ? "bg-emerald-600 hover:bg-emerald-600"
             : "bg-stone-100 text-stone-500 hover:bg-stone-100"
-        }
+        )}
       >
         {status === "ready" ? "準備完了" : "準備中"}
       </Badge>
@@ -51,7 +52,7 @@ export const ReservationList = () => (
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-stone-100">
-            <TableHead className="w-50">顧客名</TableHead>
+            <TableHead className="w-48">顧客名</TableHead>
             <TableHead>商品</TableHead>
             <TableHead>時間</TableHead>
             <TableHead className="text-right">状況</TableHead>
