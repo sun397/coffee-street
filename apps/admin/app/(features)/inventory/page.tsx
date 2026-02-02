@@ -7,17 +7,15 @@ import { Button, Input } from "@repo/ui";
 import { Plus, Search, Filter } from "lucide-react";
 import { useInventorys } from "@/lib/queries/inventory";
 import { Product } from "./types";
-import { useUserStore } from "@/lib/stores/user-store";
 
 export default function InventoryPage() {
-  const userId = useUserStore((state) => state.userId);
+  const { data: products, isLoading } = useInventorys();
+
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const { data: products, isLoading } = useInventorys(userId);
-
-  const handleArchive = (id: string, newStatus: "active" | "archived") => {};
-
-  const handleEdit = (product: Product) => {};
+  const handleEdit = (product: Product) => {
+    setIsDialogOpen(true)
+  };
 
   if (isLoading) return <p>読み込み中...</p>;
 
@@ -56,7 +54,6 @@ export default function InventoryPage() {
       <InventoryTable
         data={products ?? []}
         onEdit={handleEdit}
-        onArchive={handleArchive}
       />
 
       <ProductFormDialog open={isDialogOpen} setOpen={setIsDialogOpen} />

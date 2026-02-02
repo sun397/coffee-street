@@ -8,6 +8,6 @@ export type Product = {
   flavorTags: string[];
   price: number;
   stockWeight: number;
-  status: "active" | "archived";
+  archive: boolean;
   updatedAt: string;
 };

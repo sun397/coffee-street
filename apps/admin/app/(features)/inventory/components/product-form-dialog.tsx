@@ -32,7 +32,7 @@ const getInitialState = (data?: Product): Partial<Product> => {
     flavorTags: [],
     price: 0,
     stockWeight: 0,
-    status: "active",
+    archive: false,
   };
 };
 

@@ -24,16 +24,27 @@ export function useInventorys() {
 export function useAddInventory() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-
+  
   return useMutation({
     mutationFn: (value: Product) => inventoryApi.create({ ...value }),
     onSuccess: () => {
-      // 成功時に現在のユーザーのキャッシュを無効化
       if (user?.uid) {
-        queryClient.invalidateQueries({
-          queryKey: inventoryKeys.byUser(user.uid),
-        });
+        queryClient.invalidateQueries({ queryKey: inventoryKeys.byUser(user.uid) });
       }
     },
   });
+}
+
+export function useArchiveInventory(){
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({id, archive}: {id: string, archive: boolean}) => inventoryApi.archive(id, archive),
+    onSuccess: () => {
+      if (user?.uid) {
+        queryClient.invalidateQueries({ queryKey: inventoryKeys.byUser(user.uid) });
+      }
+    }
+  })
 }

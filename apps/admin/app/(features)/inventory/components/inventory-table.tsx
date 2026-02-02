@@ -21,6 +21,7 @@ import {
 import { MoreHorizontal, Edit, Archive, RotateCcw } from "lucide-react";
 import { Product, RoastLevel } from "../types";
 import { LOW_STOCK_THRESHOLD } from "../_constants";
+import { useArchiveInventory } from "@/lib/queries/inventory";
 
 const RoastIndicator = ({ level }: { level: RoastLevel }) => (
   <div className="flex gap-1">
@@ -38,11 +39,16 @@ const RoastIndicator = ({ level }: { level: RoastLevel }) => (
 
 export type InventoryTableProps = {
   data: Product[];
-  onArchive: (id: string, status: "active" | "archived") => void;
   onEdit: (product: Product) => void;
 }
 
-export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps) => {
+export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
+  const archiveMutation = useArchiveInventory()
+
+  const onArchive = (id: string, archive: boolean) => {
+    archiveMutation.mutate({ id, archive })
+  }
+
   return (
     <div className="rounded-md border border-stone-200 bg-white">
       <Table>
@@ -68,7 +74,7 @@ export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps)
           data.map((product: Product) => (
             <TableRow
               key={product.id}
-              className={product.status === "archived" ? "opacity-50" : ""}
+              className={product.archive ? "opacity-50" : ""}
             >
               <TableCell>
                 <div className="font-medium text-stone-900">{product.name}</div>
@@ -108,7 +114,7 @@ export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps)
                 </span>
               </TableCell>
               <TableCell className="text-center">
-                {product.status === "active" ? (
+                {!product.archive ? (
                   <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 shadow-none">
                     販売中
                   </Badge>
@@ -138,16 +144,16 @@ export const InventoryTable = ({ data, onArchive, onEdit }: InventoryTableProps)
                       <Edit className="mr-2 h-4 w-4" /> 編集
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    {product.status === "active" ? (
+                    {!product.archive ? (
                       <DropdownMenuItem
                         className="text-red-600"
-                        onClick={() => onArchive(product.id, "archived")}
+                        onClick={() => onArchive(product.id, !product.archive)}
                       >
                         <Archive className="mr-2 h-4 w-4" /> アーカイブ
                       </DropdownMenuItem>
                     ) : (
                       <DropdownMenuItem
-                        onClick={() => onArchive(product.id, "active")}
+                        onClick={() => onArchive(product.id, !product.archive)}
                       >
                         <RotateCcw className="mr-2 h-4 w-4" /> 復元する
                       </DropdownMenuItem>
