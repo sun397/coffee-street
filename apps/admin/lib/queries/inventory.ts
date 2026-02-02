@@ -25,7 +25,11 @@ export function useAddInventory() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (value: Product) => inventoryApi.create({ ...value, userId: user?.uid }),
+    mutationFn: (value: Product) => {
+      const uid = user?.uid;
+      if (!uid) throw new Error("ユーザーが未認証です");
+      return inventoryApi.create({ ...value, userId: uid });
+    },
     onSuccess: () => {
       if (user?.uid) {
         queryClient.invalidateQueries({ queryKey: inventoryKeys.byUser(user.uid) });
@@ -39,7 +43,11 @@ export function useUpdateInventory() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (value: Product) => inventoryApi.update({ ...value, userId: user?.uid }),
+    mutationFn: (value: Product) => {
+      const uid = user?.uid;
+      if (!uid) throw new Error("ユーザーが未認証です");
+      return inventoryApi.update({ ...value, userId: uid });
+    },
     onSuccess: () => {
       if (user?.uid) {
         queryClient.invalidateQueries({ queryKey: inventoryKeys.byUser(user.uid) });
