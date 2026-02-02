@@ -2,9 +2,15 @@
 
 import React from "react";
 import { Search } from "lucide-react";
-import { Input, Avatar, AvatarFallback } from "@repo/ui";
+import { Input, Avatar, AvatarFallback, AvatarImage } from "@repo/ui";
+import { useAuth } from "@/context/auth-context"; 
 
 export const TopHeader = () => {
+  const { user } = useAuth();
+
+  const displayName = user?.displayName || "ゲストユーザー";
+  const initials = displayName.substring(0, 2).toUpperCase();
+
   return (
     <header className="h-16 border-b border-stone-200 bg-white flex items-center justify-between px-8 sticky top-0 z-10">
       <div className="relative w-96">
@@ -14,16 +20,21 @@ export const TopHeader = () => {
           placeholder="予約番号、顧客名で検索..."
         />
       </div>
+
       <div className="flex items-center gap-4">
         <div className="text-right hidden sm:block">
           <p className="text-sm font-medium text-stone-900">
-            Roaster's Lab 自由が丘
+            {displayName}
           </p>
-          <p className="text-xs text-stone-500">管理者権限</p>
+          <p className="text-xs text-stone-500">
+            管理者権限
+          </p>
         </div>
+
         <Avatar className="h-9 w-9 border border-stone-200">
+          {user?.photoURL && <AvatarImage src={user.photoURL} alt={displayName} />}
           <AvatarFallback className="bg-orange-100 text-orange-700 text-xs">
-            RL
+            {initials}
           </AvatarFallback>
         </Avatar>
       </div>
