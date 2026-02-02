@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import { InventoryTable } from "@/app/(features)/inventory/components/inventory-table";
 import { ProductFormDialog } from "@/app/(features)/inventory/components/product-form-dialog";
-import { Button, Input } from "@repo/ui";
+import { Button, cn, Input } from "@repo/ui";
 import { Plus, Search, Filter } from "lucide-react";
-import { useInventorys } from "@/lib/queries/inventory";
+import { useInventories } from "@/lib/queries/inventory";
 import { Product } from "./types";
 
 export default function InventoryPage() {
-  const { data: products, isLoading } = useInventorys();
+  const { data: products, isLoading } = useInventories();
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -20,7 +20,7 @@ export default function InventoryPage() {
   if (isLoading) return <p>読み込み中...</p>;
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6">
+    <div className={cn("p-8 max-w-7xl mx-auto space-y-6")}>
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-3xl font-serif font-bold text-stone-900">
@@ -31,7 +31,7 @@ export default function InventoryPage() {
           </p>
         </div>
         <Button
-          className="bg-orange-800 hover:bg-orange-900"
+          className={cn("bg-orange-800 hover:bg-orange-900")}
           onClick={() => setIsDialogOpen(true)}
         >
           <Plus className="w-4 h-4 mr-2" /> 新規商品登録

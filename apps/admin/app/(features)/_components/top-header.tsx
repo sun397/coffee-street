@@ -16,6 +16,7 @@ export const TopHeader = () => {
       <div className="relative w-96">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4" />
         <Input
+          aria-label="予約番号または顧客名で検索"
           className="pl-10 bg-stone-50 border-none h-9 text-sm"
           placeholder="予約番号、顧客名で検索..."
         />

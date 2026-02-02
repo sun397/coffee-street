@@ -8,12 +8,12 @@ export const inventoryKeys = {
   byUser: (userId: string) => [...inventoryKeys.all, userId] as const,
 };
 
-export function useInventorys() {
+export function useInventories() {
   const { user } = useAuth();
   const userId = user?.uid;
 
   return useQuery({
-    queryKey: inventoryKeys.byUser(userId ?? ""),
+    queryKey: inventoryKeys.byUser(userId!),
     queryFn: () => inventoryApi.fetchByUserId(userId!),
     // userId が取得できるまでクエリを走らせない
     enabled: !!userId,

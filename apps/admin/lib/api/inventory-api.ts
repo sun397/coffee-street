@@ -53,7 +53,7 @@ export const inventoryApi = {
     try {
       const productRef = doc(db, "products", id);
       await updateDoc(productRef, {
-      archive: !archive,
+      archive,
       updatedAt: serverTimestamp(),
     });
     } catch (error) {
