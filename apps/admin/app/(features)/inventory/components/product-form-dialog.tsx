@@ -83,7 +83,7 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
             <Label htmlFor="name">豆の名前</Label>
             <Input 
               id="name" 
-              value={formData.name}
+              value={formData.name ?? ''}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="エチオピア イルガチェフェ" 
             />
@@ -95,7 +95,7 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
               <Label htmlFor="origin">産地</Label>
               <Input 
                 id="origin" 
-                value={formData.origin}
+                value={formData.origin ?? ''}
                 onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
                 placeholder="エチオピア" 
               />
@@ -132,7 +132,7 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
             <Label htmlFor="flavorTags">フレーバータグ (カンマ区切り)</Label>
             <Input 
               id="flavorTags" 
-              value={formData.flavorTags?.join(", ")}
+              value={formData.flavorTags?.join(", ") ?? ''}
               onChange={(e) => setFormData({ 
                 ...formData, 
                 flavorTags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) 
@@ -161,9 +161,9 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
           <Button
             className={cn("bg-orange-800 hover:bg-orange-900 min-w-[100px]")}
             onClick={handleSave}
-            disabled={addMutation.isPending}
+            disabled={addMutation.isPending || updateMutation.isPending}
           >
-            {addMutation.isPending ? "保存中..." : "保存する"}
+            {addMutation.isPending || updateMutation.isPending ? "保存中..." : "保存する"}
           </Button>
         </div>
       </DialogContent>

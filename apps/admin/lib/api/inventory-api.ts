@@ -14,10 +14,18 @@ export const inventoryApi = {
 
     const q = query(collection(db, "products"), where("userId", "==", userId));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Product[];
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        ...data, 
+        id: doc.id, 
+        updatedAt: data.updatedAt?.toDate 
+          ? data.updatedAt.toDate().toISOString() 
+          : new Date().toISOString(), 
+      } as Product;
+    });
   },
   create: async (product: Product): Promise<void> => {
     if (USE_DUMMY) {
