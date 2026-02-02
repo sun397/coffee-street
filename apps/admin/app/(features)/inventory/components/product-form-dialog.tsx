@@ -14,7 +14,6 @@ import {
 import { Product, RoastLevel } from "../types";
 import { useAddInventory } from "@/lib/queries/inventory";
 import { ROAST_LABELS } from "../_constants";
-import { useUserStore } from "@/lib/stores/user-store";
 
 export type ProductFormDialogProps = {
   open: boolean;
@@ -39,8 +38,7 @@ const getInitialState = (data?: Product): Partial<Product> => {
 export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDialogProps) => {
   const [formData, setFormData] = useState<Partial<Product>>(getInitialState(initialData));
 
-  const userId = useUserStore((state) => state.userId);
-  const addMutation = useAddInventory(userId);
+  const addMutation = useAddInventory();
 
   // ダイアログの状態が変わるたびにリセット
   useEffect(() => {
