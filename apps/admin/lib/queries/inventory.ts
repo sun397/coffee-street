@@ -1,11 +1,10 @@
-// lib/queries/product.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { inventoryApi } from "@/lib/api/inventory-api";
 import { Product } from "@/app/(features)/inventory/types";
 import { useAuth } from "@/context/auth-context";
 
 export const inventoryKeys = {
-  all: ["inventorys"] as const,
+  all: ["inventories"] as const,
   byUser: (userId: string) => [...inventoryKeys.all, userId] as const,
 };
 
