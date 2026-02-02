@@ -61,7 +61,11 @@ export function useArchiveInventory(){
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({id, archive}: {id: string, archive: boolean}) => inventoryApi.archive(id, archive),
+    mutationFn: ({ id, archive }: { id: string; archive: boolean }) => {
+      const uid = user?.uid;
+      if (!uid) throw new Error("ユーザーが未認証です");
+      return inventoryApi.archive(id, archive);
+    },
     onSuccess: () => {
       if (user?.uid) {
         queryClient.invalidateQueries({ queryKey: inventoryKeys.byUser(user.uid) });
