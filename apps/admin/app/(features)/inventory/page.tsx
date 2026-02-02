@@ -44,6 +44,7 @@ export default function InventoryPage() {
         <div className={cn("relative flex-1 max-w-md")}>
           <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4")} />
           <Input
+            aria-label="商品名、産地で検索"
             className={cn("pl-10 bg-white border-stone-200")}
             placeholder="商品名、産地で検索..."
           />
