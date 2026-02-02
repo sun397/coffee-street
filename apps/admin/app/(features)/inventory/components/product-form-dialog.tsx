@@ -13,13 +13,14 @@ import {
   Slider,
 } from "@repo/ui";
 import { Product, RoastLevel } from "../types";
-import { useAddInventory } from "@/lib/queries/inventory";
+import { useAddInventory, useUpdateInventory } from "@/lib/queries/inventory";
 import { ROAST_LABELS } from "../_constants";
 
 export type ProductFormDialogProps = {
   open: boolean;
+  value?: Product;
   setOpen: (value: boolean) => void;
-  initialData?: Product;
+  handleChange: (value?: Product) => void;
 };
 
 // 新規登録時のデフォルト値
@@ -36,43 +37,43 @@ const getInitialState = (data?: Product): Partial<Product> => {
   };
 };
 
-export const ProductFormDialog = ({ open, setOpen, initialData }: ProductFormDialogProps) => {
-  const [formData, setFormData] = useState<Partial<Product>>(getInitialState(initialData));
+export const ProductFormDialog = ({ open, value, setOpen, handleChange }: ProductFormDialogProps) => {
+  const [formData, setFormData] = useState<Partial<Product>>(getInitialState(value));
 
   const addMutation = useAddInventory();
-
-  // ダイアログの状態が変わるたびにリセット
-  useEffect(() => {
-    if (open) {
-      setFormData(getInitialState(initialData));
-    }
-  }, [open, initialData]);
+  const updateMutation = useUpdateInventory();
 
   const handleSave = () => {
-    // 送信用データの整形
-    const submitData = {
-      ...formData,
-      id: initialData?.id || Math.random().toString(36).substring(7),
-      updatedAt: new Date().toISOString(),
-    } as Product;
+    const value = { ...formData } as Product;
 
-    addMutation.mutate(submitData, {
-      onSuccess: () => {
-        setOpen(false);
-      },
-      onError: (error) => {
-        console.error("保存に失敗しました:", error);
-        alert("保存中にエラーが発生しました。");
-      }
-    });
+    if (!value) {
+      addMutation.mutate(value, {
+        onSuccess: () => setOpen(false),
+        onError: (err) => alert("エラー: " + err.message)
+      });
+    } else {
+      updateMutation.mutate({ ...value, id: value.id }, {
+        onSuccess: () => {
+          setOpen(false);
+          handleChange(undefined);
+        },
+        onError: (err) => alert("エラー: " + err.message)
+      });
+    }
   };
+
+  useEffect(() => {
+    if (open) {
+      setFormData(getInitialState(value));
+    }
+  }, [open, value]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className={cn("sm:max-w-[425px]")} onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
-            {initialData ? "商品情報の編集" : "新規商品の登録"}
+            {value ? "商品情報の編集" : "新規商品の登録"}
           </DialogTitle>
         </DialogHeader>
         <div className={cn("grid gap-4 py-4")}>

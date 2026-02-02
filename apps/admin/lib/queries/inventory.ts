@@ -34,6 +34,20 @@ export function useAddInventory() {
   });
 }
 
+export function useUpdateInventory() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (value: Product) => inventoryApi.update({ ...value, userId: user?.uid }),
+    onSuccess: () => {
+      if (user?.uid) {
+        queryClient.invalidateQueries({ queryKey: inventoryKeys.byUser(user.uid) });
+      }
+    },
+  });
+}
+
 export function useArchiveInventory(){
   const { user } = useAuth();
   const queryClient = useQueryClient();

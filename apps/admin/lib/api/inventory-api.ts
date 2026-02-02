@@ -43,6 +43,28 @@ export const inventoryApi = {
       throw error;
     }
   },
+  update: async (product: Product): Promise<void> => {
+    if (USE_DUMMY) {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      console.log("Dummy data updated:", product);
+      return;
+    }
+
+    try {
+      const productRef = doc(db, "products", product.id);
+
+      const newProductData = {
+        ...product,
+        updatedAt: serverTimestamp(),
+      };
+
+      await updateDoc(productRef, newProductData);
+
+    } catch (error) {
+      console.error("Firestore 更新エラー:", error);
+      throw error;
+    }
+  },
   archive: async (id: string, archive: boolean): Promise<void> => {
     if(USE_DUMMY){
       await new Promise((resolve) => setTimeout(resolve, 800));
