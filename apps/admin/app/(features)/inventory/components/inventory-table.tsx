@@ -60,7 +60,7 @@ export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
             <TableHead className="text-right">販売価格</TableHead>
             <TableHead className="text-right">在庫量</TableHead>
             <TableHead className="text-center">ステータス</TableHead>
-            <TableHead className="w-[100px]"></TableHead>
+            <TableHead className="w-25"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

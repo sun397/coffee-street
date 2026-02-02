@@ -70,7 +70,7 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className={cn("sm:max-w-[425px]")} onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className={cn("sm:max-w-106.25")} onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
             {value ? "商品情報の編集" : "新規商品の登録"}
@@ -159,7 +159,7 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
             キャンセル
           </Button>
           <Button
-            className={cn("bg-orange-800 hover:bg-orange-900 min-w-[100px]")}
+            className={cn("bg-orange-800 hover:bg-orange-900 min-w-25")}
             onClick={handleSave}
             disabled={addMutation.isPending || updateMutation.isPending}
           >

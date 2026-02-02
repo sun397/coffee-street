@@ -51,7 +51,7 @@ export const ReservationList = () => (
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-stone-100">
-            <TableHead className="w-[200px]">顧客名</TableHead>
+            <TableHead className="w-50">顧客名</TableHead>
             <TableHead>商品</TableHead>
             <TableHead>時間</TableHead>
             <TableHead className="text-right">状況</TableHead>
