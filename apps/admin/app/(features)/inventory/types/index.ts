@@ -10,4 +10,5 @@ export type Product = {
   stockWeight: number;
   archive: boolean;
   updatedAt: string;
+  userId?: string;
 };

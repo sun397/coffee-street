@@ -26,7 +26,7 @@ export function useAddInventory() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (value: Product) => inventoryApi.create({ ...value }),
+    mutationFn: (value: Product) => inventoryApi.create({ ...value, userId: user?.uid }),
     onSuccess: () => {
       if (user?.uid) {
         queryClient.invalidateQueries({ queryKey: inventoryKeys.byUser(user.uid) });
