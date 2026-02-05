@@ -1,11 +1,11 @@
-export type ReservationItemDto = {
+export interface ReservationItemDto {
   name: string;
   item: string;
   time: string;
   status: "ready" | "pending";
 };
 
-export type InventoryItemDto = {
+export interface InventoryItemDto {
   label: string;
   percent: number;
   color: string;
