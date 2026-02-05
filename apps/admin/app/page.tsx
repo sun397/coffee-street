@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 export default function AdminDashboard() {
-  const { user, loading, logout } = useAuth(); // logout を追加
+  const { user, loading, logout, hasShop, shopLoading, shop } = useAuthStore();
   const router = useRouter();
   const [message, setMessage] = useState("API呼び出し中...");
   const [userId, setUserId] = useState("");
@@ -16,6 +16,13 @@ export default function AdminDashboard() {
       router.push("/login");
     }
   }, [user, loading, router]);
+
+  // 2. ショップ未登録の場合は登録画面へ
+  useEffect(() => {
+    if (!loading && !shopLoading && user && !hasShop) {
+      router.push("/register");
+    }
+  }, [user, loading, hasShop, shopLoading, router]);
 
   // 2. API疎通テスト
   useEffect(() => {
@@ -48,14 +55,14 @@ export default function AdminDashboard() {
     }
   }, [user, loading]);
 
-  if (loading) return <div className="p-8 text-center">読み込み中...</div>;
-  if (!user) return null;
+  if (loading || shopLoading) return <div className="p-8 text-center">読み込み中...</div>;
+  if (!user || !hasShop) return null;
 
   return (
     <div className="p-8 space-y-6 max-w-2xl mx-auto">
       <div className="flex justify-between items-center border-b pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Coffee Street Admin</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{shop?.name ?? "Coffee Street Admin"}</h1>
           <p className="text-sm text-gray-500">{user.displayName} としてログイン中</p>
         </div>
         
