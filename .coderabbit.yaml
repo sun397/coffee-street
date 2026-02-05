@@ -5,10 +5,12 @@ language: "ja-JP"
 
 reviews:
   auto_review:
-    enabled: true
+    enabled: false
     drafts: false
     base_branches:
       - main
+    labels:
+      - "review-by-coderabbit"
 
   path_filters:
     - "!pnpm-lock.yaml"
