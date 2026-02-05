@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   cn,
@@ -12,33 +12,18 @@ import {
   Label,
   Slider,
 } from "@repo/ui";
-import { Product, RoastLevel } from "../types";
-import { useAddInventory, useUpdateInventory } from "@/lib/queries/inventory";
+import { useAddInventory, useInventoryFromCache, useUpdateInventory } from "@/lib/queries/inventory";
 import { ROAST_LABELS } from "../_constants";
+import { Product, RoastLevel } from "@/types/product";
 
-export type ProductFormDialogProps = {
-  open: boolean;
-  value?: Product;
-  setOpen: (value: boolean) => void;
-  handleChange: (value?: Product) => void;
+interface ProductFormDialogProps {
+  productId?: string;
+  setIsOpen: (value: boolean) => void;
 };
 
-// 新規登録時のデフォルト値
-const getInitialState = (data?: Product): Partial<Product> => {
-  if (data) return data;
-  return {
-    name: "",
-    origin: "",
-    roastLevel: 3,
-    flavorTags: [],
-    price: 0,
-    stockWeight: 0,
-    archive: false,
-  };
-};
-
-export const ProductFormDialog = ({ open, value, setOpen, handleChange }: ProductFormDialogProps) => {
-  const [formData, setFormData] = useState<Partial<Product>>(getInitialState(value));
+export const ProductFormDialog = ({ productId, setIsOpen }: ProductFormDialogProps) => {
+  const product = useInventoryFromCache(productId);
+  const [formData, setFormData] = useState<Partial<Product>>(product ?? {});
 
   const addMutation = useAddInventory();
   const updateMutation = useUpdateInventory();
@@ -46,34 +31,25 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
   const handleSave = () => {
     const submitData = { ...formData } as Product;
 
-    if (!value?.id) {
+    if (!formData?.id) {
       addMutation.mutate(submitData, {
-        onSuccess: () => setOpen(false),
+        onSuccess: () => setIsOpen(false),
         onError: (err) => alert("エラー: " + err.message)
       });
     } else {
-      updateMutation.mutate({ ...submitData, id: value.id }, {
-        onSuccess: () => {
-          setOpen(false);
-          handleChange(undefined);
-        },
+      updateMutation.mutate({ ...submitData, id: formData.id }, {
+        onSuccess: () => setIsOpen(false),
         onError: (err) => alert("エラー: " + err.message)
       });
     }
   };
 
-  useEffect(() => {
-    if (open) {
-      setFormData(getInitialState(value));
-    }
-  }, [open, value]);
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open>
       <DialogContent className={cn("sm:max-w-106.25")} onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
-            {value ? "商品情報の編集" : "新規商品の登録"}
+            {productId ? "商品情報の編集" : "新規商品の登録"}
           </DialogTitle>
         </DialogHeader>
         <div className={cn("grid gap-4 py-4")}>
@@ -117,7 +93,7 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
             <div className="flex justify-between items-center">
               <Label>焙煎度</Label>
               {(() => {
-                const roastLevel = (formData.roastLevel ?? 3) as RoastLevel;
+                const roastLevel = (formData.level ?? 3) as RoastLevel;
                 return (
                   <span className={cn("text-sm font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded")}>
                     Level {roastLevel} ({ROAST_LABELS[roastLevel]})
@@ -126,21 +102,21 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
               })()}
             </div>
             <Slider
-              value={[(formData.roastLevel ?? 3) as RoastLevel]} 
+              value={[(formData.level ?? 3) as RoastLevel]} 
               max={5} min={1} step={1} 
-              onValueChange={(vals) => setFormData({ ...formData, roastLevel: vals[0] as Product['roastLevel'] })}
+              onValueChange={(vals) => setFormData({ ...formData, level: vals[0] as Product['level'] })}
             />
           </div>
 
           {/* フレーバータグ */}
           <div className="grid gap-2">
-            <Label htmlFor="flavorTags">フレーバータグ (カンマ区切り)</Label>
+            <Label htmlFor="tags">フレーバータグ (カンマ区切り)</Label>
             <Input 
-              id="flavorTags" 
-              value={formData.flavorTags?.join(", ") ?? ''}
+              id="tags" 
+              value={formData.tags?.join(", ") ?? ''}
               onChange={(e) => setFormData({ 
                 ...formData, 
-                flavorTags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) 
+                tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) 
               })}
               placeholder="シトラス, フローラル" 
             />
@@ -148,19 +124,19 @@ export const ProductFormDialog = ({ open, value, setOpen, handleChange }: Produc
 
           {/* 在庫量 */}
           <div className="grid gap-2">
-            <Label htmlFor="stockWeight">在庫量 (kg)</Label>
+            <Label htmlFor="weight">在庫量 (kg)</Label>
             <Input 
-              id="stockWeight" 
+              id="weight" 
               type="number" 
               step="0.1" 
-              value={formData.stockWeight ?? ""}
-              onChange={(e) => setFormData({ ...formData, stockWeight: Number(e.target.value) })}
+              value={formData.weight ?? ""}
+              onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
             />
           </div>
         </div>
 
         <div className="flex justify-end gap-2 mt-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
             キャンセル
           </Button>
           <Button

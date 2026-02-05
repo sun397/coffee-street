@@ -1,7 +1,7 @@
 import { collection, query, where, getDocs, serverTimestamp, doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Product } from "@/app/(features)/inventory/types";
 import { DUMMY_PRODUCTS } from "./mock/products";
+import { CreateProductInput, Product } from "@/types/product";
 
 const USE_DUMMY = process.env.NEXT_PUBLIC_USE_DUMMY === "true";
 
@@ -27,10 +27,16 @@ export const inventoryApi = {
       } as Product;
     });
   },
-  create: async (product: Product): Promise<void> => {
+  create: async (product: CreateProductInput): Promise<void> => {
     if (USE_DUMMY) {
       await new Promise((resolve) => setTimeout(resolve, 800));
-      console.log("Dummy data created:", product);
+      const newProductData = {
+        ...product,
+        id: '1234567890',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+      console.log("Dummy data created:", newProductData);
       return;
     }
 
@@ -41,6 +47,7 @@ export const inventoryApi = {
       const newProductData = {
         ...product,
         id: newDocRef.id,
+        createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
 

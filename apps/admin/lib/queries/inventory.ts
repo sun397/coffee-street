@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { inventoryApi } from "@/lib/api/inventory-api";
-import { Product } from "@/app/(features)/inventory/types";
 import { useAuth } from "@/context/auth-context";
+import { Product } from "@/types/product";
 
 export const inventoryKeys = {
   all: ["inventories"] as const,
@@ -15,9 +15,19 @@ export function useInventories() {
   return useQuery({
     queryKey: inventoryKeys.byUser(userId ?? ""),
     queryFn: () => inventoryApi.fetchByUserId(userId!),
-    // userId が取得できるまでクエリを走らせない
     enabled: !!userId,
   });
+}
+
+export function useInventoryFromCache(id?: string) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  
+  if (!id || !user?.uid) return undefined;
+
+  const allData: Product[] | undefined = queryClient.getQueryData(inventoryKeys.byUser(user.uid));
+
+  return allData?.find(item => item?.id === id);
 }
 
 export function useAddInventory() {

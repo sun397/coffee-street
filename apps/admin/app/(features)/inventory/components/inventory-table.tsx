@@ -19,11 +19,11 @@ import {
   cn,
 } from "@repo/ui";
 import { MoreHorizontal, Edit, Archive, RotateCcw } from "lucide-react";
-import { Product, RoastLevel } from "../types";
 import { LOW_STOCK_THRESHOLD } from "../_constants";
 import { useArchiveInventory } from "@/lib/queries/inventory";
+import { Product } from "@/types/product";
 
-const RoastIndicator = ({ level }: { level: RoastLevel }) => (
+const RoastIndicator = ({ level }: { level: number }) => (
   <div className="flex gap-1">
     {[...Array(5)].map((_, i) => (
       <div
@@ -37,7 +37,7 @@ const RoastIndicator = ({ level }: { level: RoastLevel }) => (
   </div>
 );
 
-export type InventoryTableProps = {
+interface InventoryTableProps {
   data: Product[];
   onEdit: (product: Product) => void;
 }
@@ -90,14 +90,14 @@ export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
               <TableCell>
                 <div className="space-y-1">
                   <span className="text-[10px] text-stone-400 uppercase">
-                    Level {product.roastLevel}
+                    Level {product.level}
                   </span>
-                  <RoastIndicator level={product.roastLevel} />
+                  <RoastIndicator level={product.level} />
                 </div>
               </TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1">
-                  {product.flavorTags.map((tag: string) => (
+                  {product.tags?.map((tag: string) => (
                     <Badge
                       key={tag}
                       variant="secondary"
@@ -114,10 +114,10 @@ export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
               <TableCell className="text-right">
                 <span
                   className={cn(
-                    product.stockWeight < LOW_STOCK_THRESHOLD && "text-red-600 font-bold"
+                    product.weight < LOW_STOCK_THRESHOLD && "text-red-600 font-bold"
                   )}
                 >
-                  {product.stockWeight} kg
+                  {product.weight} kg
                 </span>
               </TableCell>
               <TableCell className="text-center">

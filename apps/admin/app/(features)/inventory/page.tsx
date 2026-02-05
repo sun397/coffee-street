@@ -6,18 +6,13 @@ import { ProductFormDialog } from "@/app/(features)/inventory/components/product
 import { Button, cn, Input } from "@repo/ui";
 import { Plus, Search, Filter } from "lucide-react";
 import { useInventories } from "@/lib/queries/inventory";
-import { Product } from "./types";
+import { Product } from "@/types/product";
 
 export default function InventoryPage() {
   const { data: products, isLoading } = useInventories();
 
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<Product>();
-
-  const handleEdit = (product: Product) => {
-    setSelectedValue(product)
-    setIsDialogOpen(true)
-  };
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [productId, setProductId] = useState<string>('');
 
   if (isLoading) return <p>読み込み中...</p>;
 
@@ -35,8 +30,8 @@ export default function InventoryPage() {
         <Button
           className={cn("bg-orange-800 hover:bg-orange-900")}
           onClick={() => {
-            setSelectedValue(undefined);
-            setIsDialogOpen(true);
+            setProductId('');
+            setIsOpen(true);
           }}
         >
           <Plus className={cn("w-4 h-4 mr-2")} /> 新規商品登録
@@ -59,18 +54,16 @@ export default function InventoryPage() {
 
       <InventoryTable
         data={products ?? []}
-        onEdit={handleEdit}
+        onEdit={(value: Product) => {
+          setProductId(value.id)
+          setIsOpen(true)
+        }}
       />
 
-      <ProductFormDialog
-        open={isDialogOpen}
-        value={selectedValue}
-        setOpen={(open) => {
-          setIsDialogOpen(open);
-          if (!open) setSelectedValue(undefined);
-        }}
-        handleChange={setSelectedValue}
-      />
+      {isOpen && (<ProductFormDialog
+        productId={productId}
+        setIsOpen={setIsOpen}
+      />)}
     </div>
   );
 }
