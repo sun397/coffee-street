@@ -78,12 +78,18 @@ export const ProductFormDialog = ({ productId, setIsOpen }: ProductFormDialogPro
             </div>
             {/* 価格 */}
             <div className="grid gap-2">
-              <Label htmlFor="price">価格 (100g)</Label>
+              <Label htmlFor="price">価格 (円)</Label>
               <Input 
                 id="price" 
                 type="number" 
                 value={formData.price ?? ""}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setFormData({ 
+                    ...formData, 
+                    price: val === "" ? undefined : Number(val) 
+                  });
+                }}
               />
             </div>
           </div>
@@ -124,13 +130,19 @@ export const ProductFormDialog = ({ productId, setIsOpen }: ProductFormDialogPro
 
           {/* 在庫量 */}
           <div className="grid gap-2">
-            <Label htmlFor="weight">在庫量 (kg)</Label>
+            <Label htmlFor="weight">在庫量 (g)</Label>
             <Input 
               id="weight" 
               type="number" 
               step="0.1" 
               value={formData.weight ?? ""}
-              onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ 
+                  ...formData, 
+                  weight: val === "" ? undefined : Number(val) 
+                });
+              }}
             />
           </div>
         </div>
