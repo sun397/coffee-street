@@ -45,7 +45,7 @@ export const ProductFormDialog = ({ productId, setIsOpen }: ProductFormDialogPro
   };
 
   return (
-    <Dialog open>
+    <Dialog open onOpenChange={() => setIsOpen(false)}>
       <DialogContent className={cn("sm:max-w-106.25")} onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
