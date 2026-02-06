@@ -20,6 +20,7 @@ export * from "./components/atom/sonner";
 export * from "./components/atom/switch";
 export * from "./components/atom/table";
 export * from "./components/atom/tooltip";
+export * from "./components/atom/command";
 
 // ユーティリティ
 export * from "./lib/utils";

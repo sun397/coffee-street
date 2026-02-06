@@ -13,8 +13,9 @@ import {
   Slider,
 } from "@repo/ui";
 import { useAddInventory, useInventoryFromCache, useUpdateInventory } from "@/lib/queries/inventory";
-import { ROAST_LABELS } from "../_constants";
+import { FLAVORS, ROAST_LABELS } from "../_constants";
 import { Product, RoastLevel } from "@/types/product";
+import { MultiSelectTags } from "../../_components/MultiSelectTags";
 
 interface ProductFormDialogProps {
   productId?: string;
@@ -115,7 +116,7 @@ export const ProductFormDialog = ({ productId, setIsOpen }: ProductFormDialogPro
           </div>
 
           {/* フレーバータグ */}
-          <div className="grid gap-2">
+          {/* <div className="grid gap-2">
             <Label htmlFor="tags">フレーバータグ (カンマ区切り)</Label>
             <Input 
               id="tags" 
@@ -125,6 +126,15 @@ export const ProductFormDialog = ({ productId, setIsOpen }: ProductFormDialogPro
                 tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) 
               })}
               placeholder="シトラス, フローラル" 
+            />
+          </div> */}
+          {/* フレーバータグ (Combobox化) */}
+          <div className="grid gap-2">
+            <Label htmlFor="tags">フレーバータグ</Label>
+            <MultiSelectTags
+              options={FLAVORS}
+              selected={formData.tags ?? []}
+              onChange={(newTags) => setFormData({ ...formData, tags: newTags })}
             />
           </div>
 

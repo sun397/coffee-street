@@ -2,6 +2,11 @@ import { Timestamp } from "firebase/firestore";
 
 export type RoastLevel = 1 | 2 | 3 | 4 | 5;
 
+export interface MultiSelectOption {
+  id: string;
+  label: string;
+};
+
 export interface Product {
   id: string;
   userId: string;

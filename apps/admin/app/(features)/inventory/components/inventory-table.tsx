@@ -117,7 +117,7 @@ export const InventoryTable = ({ data, onEdit }: InventoryTableProps) => {
                     product.weight < LOW_STOCK_THRESHOLD && "text-red-600 font-bold"
                   )}
                 >
-                  {product.weight} kg
+                  {product.weight / 1000} kg
                 </span>
               </TableCell>
               <TableCell className="text-center">
