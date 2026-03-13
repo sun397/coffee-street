@@ -111,7 +111,7 @@ export function initializeAuthListener() {
           console.log("shops query result:", { data, error, status });
           _setShop((data as Shop) ?? null);
         } catch (err) {
-          console.error("Shop fetch error:", err);
+          console.warn("Shop fetch error:", err);
           _setShop(null);
         } finally {
           _setShopLoading(false);
@@ -156,7 +156,3 @@ export function cleanupAuthListener() {
   }
 }
 
-// React Strict Mode の影響を受けないよう、モジュールロード時に1度だけ初期化する
-if (typeof window !== "undefined") {
-  initializeAuthListener();
-}
