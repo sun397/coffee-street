@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(pnpm --filter admin add:*)",
-      "Bash(pnpm:*)"
+      "Bash(pnpm:*)",
+      "Bash(ls:*)",
+      "Bash(go mod:*)",
+      "Bash(go build:*)"
     ]
   }
 }

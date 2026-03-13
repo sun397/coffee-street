@@ -70,13 +70,11 @@ export default function ShopRegisterPage() {
       await registerWithEmail(email, password);
     } catch (error: unknown) {
       console.error("登録失敗:", error);
-      const firebaseError = error as { code?: string };
-      if (firebaseError.code === "auth/email-already-in-use") {
+      const authError = error as { message?: string };
+      if (authError.message?.includes("User already registered")) {
         setError("このメールアドレスは既に使用されています。");
-      } else if (firebaseError.code === "auth/invalid-email") {
-        setError("メールアドレスの形式が正しくありません。");
-      } else if (firebaseError.code === "auth/weak-password") {
-        setError("パスワードが弱すぎます。6文字以上で入力してください。");
+      } else if (authError.message?.includes("Password should be at least")) {
+        setError("パスワードは6文字以上で入力してください。");
       } else {
         setError("アカウント登録に失敗しました。");
       }
@@ -92,7 +90,7 @@ export default function ShopRegisterPage() {
 
     try {
       await createShop.mutateAsync({
-        uid: user.uid,
+        uid: user.id,
         data: formData,
       });
       router.push("/");
@@ -343,11 +341,11 @@ export default function ShopRegisterPage() {
                   {user && (
                     <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-200 flex items-center gap-3">
                       <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                        {user.displayName?.charAt(0) || user.email?.charAt(0) || "U"}
+                        {(user.user_metadata?.full_name as string)?.charAt(0) || user.email?.charAt(0) || "U"}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-zinc-800 truncate">
-                          {user.displayName || "新規ユーザー"}
+                          {(user.user_metadata?.full_name as string) || "新規ユーザー"}
                         </p>
                         <p className="text-xs text-zinc-500 truncate">{user.email}</p>
                       </div>

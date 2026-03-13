@@ -1,9 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { collection, getDocs, doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { supabase } from "@/lib/supabase";
 
-// 使用例: Firestoreからドキュメントを取得するQuery
-// 実際のコレクション名とTypeは適宜変更してください
+// 使用例: Supabaseからデータを取得するQuery
+// 実際のテーブル名とTypeは適宜変更してください
 
 interface ExampleDoc {
   id: string;
@@ -21,11 +20,9 @@ export function useExamples() {
   return useQuery({
     queryKey: queryKeys.examples,
     queryFn: async () => {
-      const snapshot = await getDocs(collection(db, "examples"));
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as ExampleDoc[];
+      const { data, error } = await supabase.from("examples").select("*");
+      if (error) throw error;
+      return (data ?? []) as ExampleDoc[];
     },
   });
 }
@@ -36,14 +33,26 @@ export function useCreateExample() {
 
   return useMutation({
     mutationFn: async (data: Omit<ExampleDoc, "id"> & { id?: string }) => {
-      const docRef = data.id
-        ? doc(db, "examples", data.id)
-        : doc(collection(db, "examples"));
-      await setDoc(docRef, { name: data.name });
-      return { id: docRef.id, ...data };
+      if (data.id) {
+        const { data: updated, error } = await supabase
+          .from("examples")
+          .update({ name: data.name })
+          .eq("id", data.id)
+          .select()
+          .single();
+        if (error) throw error;
+        return updated as ExampleDoc;
+      } else {
+        const { data: inserted, error } = await supabase
+          .from("examples")
+          .insert({ name: data.name })
+          .select()
+          .single();
+        if (error) throw error;
+        return inserted as ExampleDoc;
+      }
     },
     onSuccess: () => {
-      // 成功時にキャッシュを無効化して再取得
       queryClient.invalidateQueries({ queryKey: queryKeys.examples });
     },
   });

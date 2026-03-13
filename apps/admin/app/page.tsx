@@ -1,59 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
 export default function AdminDashboard() {
   const { user, loading, logout, hasShop, shopLoading, shop } = useAuthStore();
   const router = useRouter();
-  const [message, setMessage] = useState("API呼び出し中...");
-  const [userId, setUserId] = useState("");
 
-  // 1. 認証ガード: ログインしていない場合はログイン画面へ
+  // 認証ガード: ログインしていない場合はログイン画面へ
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
     }
   }, [user, loading, router]);
 
-  // 2. ショップ未登録の場合は登録画面へ
+  // ショップ未登録の場合は登録画面へ
   useEffect(() => {
     if (!loading && !shopLoading && user && !hasShop) {
       router.push("/register");
     }
   }, [user, loading, hasShop, shopLoading, router]);
-
-  // 2. API疎通テスト
-  useEffect(() => {
-    const fetchPrivateData = async () => {
-      if (!user) return;
-
-      try {
-        const token = await user.getIdToken();
-        const res = await fetch("http://localhost:8080/api/admin/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setMessage(data.message);
-          setUserId(data.user_id);
-        } else {
-          setMessage("認証エラーが発生しました");
-        }
-      } catch (err) {
-        console.error(err);
-        setMessage("API接続に失敗しました");
-      }
-    };
-
-    if (!loading && user) {
-      fetchPrivateData();
-    }
-  }, [user, loading]);
 
   if (loading || shopLoading) return <div className="p-8 text-center">読み込み中...</div>;
   if (!user || !hasShop) return null;
@@ -63,10 +30,9 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center border-b pb-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">{shop?.name ?? "Coffee Street Admin"}</h1>
-          <p className="text-sm text-gray-500">{user.displayName} としてログイン中</p>
+          <p className="text-sm text-gray-500">{(user.identities?.map(({identity_data}) => identity_data?.name + identity_data?.email))} としてログイン中</p>
         </div>
-        
-        {/* ログアウトボタン */}
+
         <button
           onClick={async () => {
             await logout();
@@ -76,18 +42,6 @@ export default function AdminDashboard() {
         >
           ログアウト
         </button>
-      </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h2 className="font-semibold text-lg mb-4 text-gray-700">バックエンドからの応答:</h2>
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-700 font-bold">{message}</p>
-          {userId && (
-            <p className="mt-2 text-xs text-green-600">
-              User ID: <span className="font-mono bg-white px-1">{userId}</span>
-            </p>
-          )}
-        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

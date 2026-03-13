@@ -1,15 +1,6 @@
 import { create } from "zustand";
-import {
-  onAuthStateChanged,
-  User,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-import { doc, onSnapshot, Unsubscribe } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 import type { Shop } from "@/types/shop";
 
 interface AuthState {
@@ -38,26 +29,32 @@ export const useAuthStore = create<AuthState>((set) => ({
   shopLoading: true,
 
   loginWithGoogle: async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
   },
 
   loginWithEmail: async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   },
 
   registerWithEmail: async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
   },
 
   logout: async () => {
-    await signOut(auth);
+    await supabase.auth.signOut();
   },
 
   _setUser: (user) =>
     set({
       user,
-      shopId: user?.uid ?? null,
+      shopId: user?.id ?? null,
     }),
 
   _setLoading: (loading) => set({ loading }),
@@ -71,60 +68,95 @@ export const useAuthStore = create<AuthState>((set) => ({
   _setShopLoading: (shopLoading) => set({ shopLoading }),
 }));
 
-// Firebase認証リスナーを初期化する関数
-let authUnsubscribe: Unsubscribe | null = null;
-let shopUnsubscribe: Unsubscribe | null = null;
+// Supabase認証リスナーを初期化する関数
+let authUnsubscribeRef: { unsubscribe: () => void } | null = null;
+let shopChannelRef: ReturnType<typeof supabase.channel> | null = null;
 
 export function initializeAuthListener() {
-  if (authUnsubscribe) return; // 既に初期化済み
+  if (authUnsubscribeRef) return; // 既に初期化済み
 
-  const store = useAuthStore.getState();
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    async (_event, session) => {
+      const { _setUser, _setLoading, _setShop, _setShopLoading } =
+        useAuthStore.getState();
 
-  authUnsubscribe = onAuthStateChanged(auth, (user) => {
-    store._setUser(user);
-    store._setLoading(false);
+      const user = session?.user ?? null;
+      _setUser(user);
+      _setLoading(false);
 
-    // 既存のショップリスナーをクリーンアップ
-    if (shopUnsubscribe) {
-      shopUnsubscribe();
-      shopUnsubscribe = null;
-    }
-
-    if (!user) {
-      store._setShop(null);
-      store._setShopLoading(false);
-      return;
-    }
-
-    // ショップデータのリアルタイム同期
-    store._setShopLoading(true);
-    const docRef = doc(db, "shops", user.uid);
-    shopUnsubscribe = onSnapshot(
-      docRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          store._setShop(snapshot.data() as Shop);
-        } else {
-          store._setShop(null);
-        }
-        store._setShopLoading(false);
-      },
-      (error) => {
-        console.error("Shop fetch error:", error);
-        store._setShop(null);
-        store._setShopLoading(false);
+      // 既存のショップリスナーをクリーンアップ
+      if (shopChannelRef) {
+        await supabase.removeChannel(shopChannelRef);
+        shopChannelRef = null;
       }
-    );
-  });
+
+      if (!user) {
+        _setShop(null);
+        _setShopLoading(false);
+        return;
+      }
+
+      // ショップデータの初回取得
+      // NOTE: onAuthStateChange コールバック内で supabase.from() を直接 await すると
+      // Supabase v2 の内部ロックによりデッドロックが発生するため、setTimeout で defer する
+      _setShopLoading(true);
+      setTimeout(async () => {
+        const { _setShop, _setShopLoading } = useAuthStore.getState();
+        try {
+          const { data, error, status } = await supabase
+            .from("shops")
+            .select("*")
+            .eq("user_id", user.id)
+            .maybeSingle();
+          console.log("shops query result:", { data, error, status });
+          _setShop((data as Shop) ?? null);
+        } catch (err) {
+          console.error("Shop fetch error:", err);
+          _setShop(null);
+        } finally {
+          _setShopLoading(false);
+        }
+      }, 0);
+
+      // ショップデータのリアルタイム同期
+      shopChannelRef = supabase
+        .channel(`shop:${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "shops",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            const { _setShop } = useAuthStore.getState();
+            if (payload.eventType === "DELETE") {
+              _setShop(null);
+            } else {
+              _setShop(payload.new as Shop);
+            }
+          }
+        )
+        .subscribe();
+    }
+  );
+
+  authUnsubscribeRef = subscription;
 }
 
 export function cleanupAuthListener() {
-  if (authUnsubscribe) {
-    authUnsubscribe();
-    authUnsubscribe = null;
+  if (authUnsubscribeRef) {
+    authUnsubscribeRef.unsubscribe();
+    authUnsubscribeRef = null;
   }
-  if (shopUnsubscribe) {
-    shopUnsubscribe();
-    shopUnsubscribe = null;
+  if (shopChannelRef) {
+    supabase.removeChannel(shopChannelRef);
+    shopChannelRef = null;
   }
+}
+
+// React Strict Mode の影響を受けないよう、モジュールロード時に1度だけ初期化する
+if (typeof window !== "undefined") {
+  initializeAuthListener();
 }

@@ -1,17 +1,15 @@
-// apps/admin/types/shop.ts
-import { Timestamp } from "firebase/firestore";
-
 export interface Shop {
   name: string;
   description: string;
   location: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ShopWithId extends Shop {
   id: string;
+  user_id: string;
 }
 
-export type CreateShopInput = Omit<Shop, "createdAt" | "updatedAt">;
+export type CreateShopInput = Omit<Shop, "created_at" | "updated_at">;
 export type UpdateShopInput = Partial<CreateShopInput>;

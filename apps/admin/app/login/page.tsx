@@ -40,15 +40,11 @@ export default function LoginPage() {
       await loginWithEmail(email, password);
     } catch (error: unknown) {
       console.error("ログイン失敗:", error);
-      const firebaseError = error as { code?: string };
-      if (firebaseError.code === "auth/user-not-found") {
-        setError("アカウントが見つかりません。");
-      } else if (firebaseError.code === "auth/wrong-password") {
-        setError("パスワードが正しくありません。");
-      } else if (firebaseError.code === "auth/invalid-email") {
-        setError("メールアドレスの形式が正しくありません。");
-      } else if (firebaseError.code === "auth/invalid-credential") {
+      const authError = error as { message?: string };
+      if (authError.message?.includes("Invalid login credentials")) {
         setError("メールアドレスまたはパスワードが正しくありません。");
+      } else if (authError.message?.includes("Email not confirmed")) {
+        setError("メールアドレスの確認が完了していません。");
       } else {
         setError("ログインに失敗しました。");
       }
