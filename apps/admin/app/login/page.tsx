@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
@@ -12,7 +11,6 @@ import { Label } from "@repo/ui/components/atom/label";
 
 export default function LoginPage() {
   const { loginWithGoogle, loginWithEmail } = useAuthStore();
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
