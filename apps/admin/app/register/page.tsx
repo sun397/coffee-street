@@ -23,6 +23,7 @@ export default function ShopRegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -49,6 +50,7 @@ export default function ShopRegisterPage() {
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccessMessage("");
 
     if (password !== confirmPassword) {
       setError("パスワードが一致しません。");
@@ -63,7 +65,12 @@ export default function ShopRegisterPage() {
     setIsSubmitting(true);
 
     try {
-      await registerWithEmail(email, password);
+      const { session } = await registerWithEmail(email, password);
+      if (!session) {
+        // メール確認が必要な場合
+        setSuccessMessage("確認メールを送信しました。メール内のリンクをクリックしてから、ログインしてください。");
+      }
+      // session がある場合は onAuthStateChange → useEffect で自動的に step が切り替わる
     } catch (error: unknown) {
       console.warn("登録失敗:", error);
       const authError = error as { message?: string };
@@ -85,10 +92,12 @@ export default function ShopRegisterPage() {
     if (!user) return;
 
     try {
-      await createShop.mutateAsync({
+      const shop = await createShop.mutateAsync({
         uid: user.id,
         data: formData,
       });
+      // AuthGuardがhasShopを参照するため、リダイレクト前にストアを即時更新
+      useAuthStore.getState()._setShop(shop);
       router.push("/");
     } catch (error) {
       console.warn("ショップ登録エラー:", error);
@@ -178,6 +187,12 @@ export default function ShopRegisterPage() {
                 {error && (
                   <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                     {error}
+                  </div>
+                )}
+
+                {successMessage && (
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">
+                    {successMessage}
                   </div>
                 )}
 

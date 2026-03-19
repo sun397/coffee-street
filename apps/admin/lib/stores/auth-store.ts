@@ -12,7 +12,8 @@ interface AuthState {
   shopLoading: boolean;
   loginWithGoogle: () => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
-  registerWithEmail: (email: string, password: string) => Promise<void>;
+  registerWithEmail: (email: string, password: string) => Promise<{ user: User | null; session: unknown }>;
+
   logout: () => Promise<void>;
   _setUser: (user: User | null) => void;
   _setLoading: (loading: boolean) => void;
@@ -43,8 +44,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   registerWithEmail: async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
+    return { user: data.user, session: data.session };
   },
 
   logout: async () => {
