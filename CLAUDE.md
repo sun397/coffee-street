@@ -71,3 +71,15 @@ apps/admin/lib/
 - Apps import shared components from `@repo/ui`
 - Query hooks use `queryKeys` object for cache key management
 - ESLint uses `--max-warnings 0` to treat warnings as errors
+
+### shadcn/ui コンポーネント利用ルール
+
+- **ネイティブHTML要素は使用禁止**: `<button>`, `<input>`, `<label>` などの素のHTML要素は使わず、必ずshadcnコンポーネントを使用する
+- **利用可能なコンポーネント**: `packages/ui/src/components/atom/` に配置。Button, Input, Label, Card, Badge, Avatar, Table, Dialog, Select, Checkbox, Form, Separator など22種類
+- **インポートパス**: `@repo/ui/components/atom/[component]` または `@repo/ui`（ルートexport）を使用
+  ```ts
+  import { Button } from "@repo/ui/components/atom/button";
+  import { Button, Card, Input } from "@repo/ui";
+  ```
+- **variantの活用**: ボタンは `variant="outline"` / `variant="destructive"` などを活用し、不要なスタイルの上書きを最小化する
+- **カード/コンテナ**: レイアウトの囲みには `<Card>` / `<CardContent>` / `<CardHeader>` 等を使用する
