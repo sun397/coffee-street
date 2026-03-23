@@ -1,31 +1,23 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
-	firebase "firebase.google.com/go/v4"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"google.golang.org/api/option"
 )
 
 func main() {
 	e := echo.New()
 
-	// 1. Firebase Admin SDK の初期化
-	ctx := context.Background()
-	opt := option.WithServiceAccountFile("service-account.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
-	if err != nil {
-		log.Fatalf("error initializing app: %v\n", err)
-	}
-
-	authClient, err := app.Auth(ctx)
-	if err != nil {
-		log.Fatalf("error getting Auth client: %v\n", err)
+	// Supabase JWT Secret (環境変数から取得)
+	jwtSecret := os.Getenv("SUPABASE_JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("SUPABASE_JWT_SECRET is not set")
 	}
 
 	// Middleware
@@ -37,23 +29,39 @@ func main() {
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 	}))
 
-	// 2. 認証ミドルウェア
+	// 認証ミドルウェア (Supabase JWT 検証)
 	authMiddleware := func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			// Authorizationヘッダーから "Bearer <TOKEN>" を取得
 			authHeader := c.Request().Header.Get("Authorization")
-			idToken := strings.Replace(authHeader, "Bearer ", "", 1)
+			tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+			if tokenStr == "" {
+				return c.JSON(http.StatusUnauthorized, map[string]string{
+					"message": "認証トークンがありません",
+				})
+			}
 
-			// トークンの検証
-			token, err := authClient.VerifyIDToken(context.Background(), idToken)
-			if err != nil {
+			token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, jwt.ErrSignatureInvalid
+				}
+				return []byte(jwtSecret), nil
+			})
+			if err != nil || !token.Valid {
 				return c.JSON(http.StatusUnauthorized, map[string]string{
 					"message": "無効な認証トークンです",
 				})
 			}
 
-			// ユーザー情報をコンテキストにセット（後で取り出せるようにする）
-			c.Set("user_id", token.UID)
+			claims, ok := token.Claims.(jwt.MapClaims)
+			if !ok {
+				return c.JSON(http.StatusUnauthorized, map[string]string{
+					"message": "無効な認証トークンです",
+				})
+			}
+
+			// Supabase JWT の sub クレームにユーザー UUID が入っている
+			userID, _ := claims["sub"].(string)
+			c.Set("user_id", userID)
 			return next(c)
 		}
 	}
@@ -63,14 +71,14 @@ func main() {
 		return c.JSON(http.StatusOK, map[string]string{"message": "pong"})
 	})
 
-	// 3. 認証が必要なエンドポイント（秘密のエリア）
+	// 認証が必要なエンドポイント
 	adminGroup := e.Group("/api/admin")
 	adminGroup.Use(authMiddleware)
 	adminGroup.GET("/me", func(c echo.Context) error {
-		userId := c.Get("user_id").(string)
+		userID := c.Get("user_id").(string)
 		return c.JSON(http.StatusOK, map[string]string{
 			"message": "あなたは認証されています！",
-			"user_id": userId,
+			"user_id": userID,
 		})
 	})
 

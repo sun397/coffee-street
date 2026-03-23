@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { supabase } from "@/lib/supabase";
 
-// 使用例: Firestoreからドキュメントを取得するQuery
-// 実際のコレクション名とTypeは適宜変更してください
+// 使用例: Supabaseからデータを取得するQuery
+// 実際のテーブル名とTypeは適宜変更してください
 
 interface ExampleDoc {
   id: string;
@@ -21,11 +20,9 @@ export function useExamples() {
   return useQuery({
     queryKey: queryKeys.examples,
     queryFn: async () => {
-      const snapshot = await getDocs(collection(db, "examples"));
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as ExampleDoc[];
+      const { data, error } = await supabase.from("examples").select("*");
+      if (error) throw error;
+      return (data ?? []) as ExampleDoc[];
     },
   });
 }
