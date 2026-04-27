@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 export type RoastLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface MultiSelectOption {
@@ -17,8 +15,8 @@ export interface Product {
   price: number;
   weight: number;
   archive: boolean;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateProductInput = Omit<Product, "id" | "createdAt" | "updatedAt">;

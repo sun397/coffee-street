@@ -3,13 +3,18 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { Input, Avatar, AvatarFallback, AvatarImage, cn } from "@repo/ui";
-import { useAuth } from "@/context/auth-context"; 
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 export const TopHeader = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
-  const displayName = user?.displayName || "ゲストユーザー";
+  const displayName =
+    (user?.user_metadata as { name?: string } | undefined)?.name ??
+    user?.email ??
+    "ゲストユーザー";
   const initials = displayName.substring(0, 2).toUpperCase();
+
+  const avatarUrl = (user?.user_metadata as { avatar_url?: string } | undefined)?.avatar_url;
 
   return (
     <header className={cn("h-16 border-b border-stone-200 bg-white flex items-center justify-between px-8 sticky top-0 z-10")}>
@@ -33,7 +38,7 @@ export const TopHeader = () => {
         </div>
 
         <Avatar className="h-9 w-9 border border-stone-200">
-          {user?.photoURL && <AvatarImage src={user.photoURL} alt={displayName} />}
+          {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
           <AvatarFallback className="bg-orange-100 text-orange-700 text-xs">
             {initials}
           </AvatarFallback>
