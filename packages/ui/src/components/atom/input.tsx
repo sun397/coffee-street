@@ -1,11 +1,30 @@
 import * as React from "react"
-
 import { cn } from "@repo/ui/lib/utils"
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    if (type === "number") {
+      const input = e.currentTarget;
+      if (parseFloat(input.value) < 0) {
+        input.value = ""; 
+      }
+    }
+    props.onInput?.(e);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (type === "number" && (e.key === "-" || e.key === "e")) {
+      e.preventDefault();
+    }
+    props.onKeyDown?.(e);
+  };
+
   return (
     <input
       type={type}
+      min={type === "number" ? "0" : props.min}
+      onInput={handleInput}
+      onKeyDown={handleKeyDown}
       data-slot="input"
       className={cn(
         "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
