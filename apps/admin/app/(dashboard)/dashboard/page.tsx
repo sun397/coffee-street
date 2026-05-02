@@ -2,9 +2,9 @@
 
 import React from "react";
 import { Button } from "@repo/ui";
-import { QuickStat } from "@/app/(features)/dashboard/components/quick-stat";
-import { ReservationList } from "@/app/(features)/dashboard/components/reservation-list";
-import { StockAlert } from "@/app/(features)/dashboard/components/stock-alert";
+import { QuickStat } from "@/app/(dashboard)/dashboard/components/quick-stat";
+import { ReservationList } from "@/app/(dashboard)/dashboard/components/reservation-list";
+import { StockAlert } from "@/app/(dashboard)/dashboard/components/stock-alert";
 
 export default function DashboardPage() {
   return (
