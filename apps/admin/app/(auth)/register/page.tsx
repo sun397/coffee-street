@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { useCreateShop } from "@/lib/queries/shop";
-import { GoogleSignInButton } from "@/components/google-sign-in-button";
-import { AuthBrandPanel } from "@/components/auth-brand-panel";
+import { AuthBrandPanel } from "@/app/(auth)/_components/auth-brand-panel";
 import { Button } from "@repo/ui/components/atom/button";
 import { Input } from "@repo/ui/components/atom/input";
 import { Label } from "@repo/ui/components/atom/label";
+import { GoogleSignInButton } from "../_components/google-sign-in-button";
 
 export default function ShopRegisterPage() {
   const { user, loginWithGoogle, registerWithEmail } =
@@ -147,13 +147,12 @@ export default function ShopRegisterPage() {
               className={`flex items-center gap-2 ${step === "account" ? "text-amber-600" : "text-zinc-400"}`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step === "account"
-                    ? "bg-amber-500 text-white"
-                    : user
-                      ? "bg-green-500 text-white"
-                      : "bg-zinc-200 text-zinc-500"
-                }`}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === "account"
+                  ? "bg-amber-500 text-white"
+                  : user
+                    ? "bg-green-500 text-white"
+                    : "bg-zinc-200 text-zinc-500"
+                  }`}
               >
                 {user ? "✓" : "1"}
               </div>
@@ -164,9 +163,8 @@ export default function ShopRegisterPage() {
               className={`flex items-center gap-2 ${step === "shop" ? "text-amber-600" : "text-zinc-400"}`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step === "shop" ? "bg-amber-500 text-white" : "bg-zinc-200 text-zinc-500"
-                }`}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === "shop" ? "bg-amber-500 text-white" : "bg-zinc-200 text-zinc-500"
+                  }`}
               >
                 2
               </div>

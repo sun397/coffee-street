@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { GoogleSignInButton } from "@/components/google-sign-in-button";
-import { AuthBrandPanel } from "@/components/auth-brand-panel";
+import { AuthBrandPanel } from "@/app/(auth)/_components/auth-brand-panel";
 import { Button } from "@repo/ui/components/atom/button";
 import { Input } from "@repo/ui/components/atom/input";
 import { Label } from "@repo/ui/components/atom/label";
+import { GoogleSignInButton } from "../_components/google-sign-in-button";
 
 export default function LoginPage() {
   const { loginWithGoogle, loginWithEmail } = useAuthStore();

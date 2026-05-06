@@ -1,7 +1,4 @@
-// apps/admin/app/layout.tsx
-import { Providers } from "@/lib/providers";
-import { AuthInitializer } from "@/components/auth-initializer";
-import { AuthGuard } from "@/components/auth-guard";
+import { Providers } from "@/app/_providers";
 import "./globals.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -9,11 +6,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja" suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
         <Providers>
-          <AuthInitializer>
-            <AuthGuard>
-              {children}
-            </AuthGuard>
-          </AuthInitializer>
+          {children}
         </Providers>
       </body>
     </html>
