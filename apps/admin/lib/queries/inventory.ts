@@ -79,9 +79,9 @@ export const inventoryApi = {
   archive: async (id: string, userId: string, archive: boolean): Promise<void> => {
     const { error } = await supabase
       .from("products")
-      .update({ 
-        archive, 
-        updated_at: new Date().toISOString() 
+      .update({
+        archive,
+        updated_at: new Date().toISOString()
       })
       .eq("id", id)
       .eq("user_id", userId);
@@ -108,6 +108,7 @@ export function useInventories() {
     queryKey: inventoryKeys.byUser(userId ?? ""),
     queryFn: () => inventoryApi.fetchByUserId(userId!),
     enabled: !!userId,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
