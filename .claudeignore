@@ -38,6 +38,3 @@ Thumbs.db
 
 # Vercel
 .vercel/
-
-# Go binaries (apps/api)
-apps/api/tmp/
