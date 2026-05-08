@@ -26,7 +26,6 @@ pnpm format
 # Run single app
 pnpm --filter admin dev    # Admin app on port 3000
 pnpm --filter user dev     # User app on port 3001
-pnpm --filter api dev      # Go API on port 8080 (uses Air for hot reload)
 
 # Generate new UI component in packages/ui
 pnpm --filter @repo/ui generate:component
@@ -40,8 +39,6 @@ This is a Turborepo monorepo with pnpm workspaces.
 
 - **apps/admin**: Next.js 16 admin dashboard (port 3000). Uses Firebase Authentication for login.
 - **apps/user**: Next.js 16 user-facing app (port 3001).
-- **apps/api**: Go backend using Echo framework (port 8080). Authenticates via Firebase Admin SDK with JWT tokens.
-↑現在は小規模なアプリケーションなので、「apps/api」は経由せず、「apps/admin」や「apps/user」から直接firebaseを呼び出す方針(2026/01/23)
 
 ### Packages
 
